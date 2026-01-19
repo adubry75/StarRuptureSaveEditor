@@ -1,0 +1,225 @@
+<UserControl x:Class="ForeverSkiesSaveEditor.Views.CraftingEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:ForeverSkiesSaveEditor.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance Type=vm:CraftingEditorViewModel}">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="350" MinWidth="200"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*" MinWidth="300"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Left Panel: Recipe List -->
+        <DockPanel Grid.Column="0">
+            <!-- Search and Actions -->
+            <StackPanel DockPanel.Dock="Top" Margin="8">
+                <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Padding="6,4"
+                         VerticalContentAlignment="Center">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <VisualBrush Stretch="None" AlignmentX="Left">
+                                                <VisualBrush.Visual>
+                                                    <TextBlock Text="🔍 Search recipes..." 
+                                                               Foreground="Gray" 
+                                                               Margin="6,0,0,0"/>
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <Button Content="Unlock All" 
+                            Command="{Binding UnlockAllCommand}"
+                            Padding="12,4" Margin="0,0,8,0"/>
+                    <Button Content="Unlock None" 
+                            Command="{Binding UnlockNoneCommand}"
+                            Padding="12,4"/>
+                </StackPanel>
+                
+                <TextBlock Margin="0,8,0,0" Foreground="Gray">
+                    <Run Text="{Binding FilteredRecipes.Count, Mode=OneWay}"/>
+                    <Run Text=" recipes shown, "/>
+                    <Run Text="{Binding MarkedForUnlockCount, Mode=OneWay}"/>
+                    <Run Text=" marked for unlock"/>
+                </TextBlock>
+            </StackPanel>
+            
+            <!-- Recipe List -->
+            <ListBox ItemsSource="{Binding FilteredRecipes}"
+                     SelectedItem="{Binding SelectedRecipe}"
+                     Margin="8,0,8,8"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:LockedRecipeViewModel}">
+                        <Grid Margin="4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <CheckBox Grid.RowSpan="2"
+                                      IsChecked="{Binding IsMarkedForUnlock}"
+                                      VerticalAlignment="Center"
+                                      Margin="0,0,8,0"
+                                      ToolTip="Mark for unlock (will be removed from locked recipes on save)"/>
+                            
+                            <TextBlock Grid.Column="1" Grid.Row="0"
+                                       Text="{Binding FriendlyName}"
+                                       FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsMarkedForUnlock}" Value="True">
+                                                <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                                <Setter Property="Foreground" Value="Gray"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            
+                            <TextBlock Grid.Column="1" Grid.Row="1"
+                                       Text="{Binding ItemsSummary}"
+                                       Foreground="Gray"
+                                       FontSize="11"
+                                       TextTrimming="CharacterEllipsis"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+        
+        <!-- Splitter -->
+        <GridSplitter Grid.Column="1" 
+                      Width="5" 
+                      HorizontalAlignment="Stretch"
+                      Background="LightGray"/>
+        
+        <!-- Right Panel: Recipe Details -->
+        <Border Grid.Column="2" 
+                BorderBrush="LightGray" 
+                BorderThickness="1" 
+                Margin="8"
+                CornerRadius="4">
+            <Grid>
+                <!-- No Selection Message -->
+                <TextBlock Text="Select a recipe from the list to edit its requirements"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="Gray"
+                           FontStyle="Italic">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedRecipe}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+                
+                <!-- Recipe Editor -->
+                <DockPanel Visibility="{Binding SelectedRecipe, Converter={StaticResource NullToCollapsedConverter}}"
+                           Margin="12">
+                    
+                    <!-- Header -->
+                    <StackPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                        <TextBlock Text="{Binding SelectedRecipe.FriendlyName}"
+                                   FontSize="18"
+                                   FontWeight="Bold"/>
+                        
+                        <TextBlock Text="{Binding SelectedRecipe.RecipePath}"
+                                   Foreground="Gray"
+                                   FontSize="10"
+                                   TextWrapping="Wrap"
+                                   Margin="0,4,0,0"/>
+                        
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <CheckBox Content="Mark for Unlock"
+                                      IsChecked="{Binding SelectedRecipe.IsMarkedForUnlock}"
+                                      FontWeight="SemiBold"/>
+                            
+                            <TextBlock Text="(Recipe will be removed from locked list on save)"
+                                       Foreground="Gray"
+                                       Margin="8,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Visibility="{Binding SelectedRecipe.IsMarkedForUnlock, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    
+                    <!-- Actions -->
+                    <StackPanel DockPanel.Dock="Bottom" 
+                                Orientation="Horizontal" 
+                                Margin="0,12,0,0">
+                        <Button Content="Zero All Counts"
+                                Command="{Binding ZeroAllCountsCommand}"
+                                Padding="12,6"/>
+                    </StackPanel>
+                    
+                    <!-- Items List -->
+                    <GroupBox Header="Required Items">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding SelectedRecipe.Items}"
+                                          Margin="8">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type vm:RecipeItemViewModel}">
+                                        <Grid Margin="0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="100"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding FriendlyName}"
+                                                           FontWeight="SemiBold"/>
+                                                <TextBlock Text="{Binding ItemId}"
+                                                           Foreground="Gray"
+                                                           FontSize="10"/>
+                                            </StackPanel>
+                                            
+                                            <StackPanel Grid.Column="1" 
+                                                        Orientation="Horizontal"
+                                                        HorizontalAlignment="Right">
+                                                <TextBlock Text="Count:"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,8,0"/>
+                                                <TextBox Text="{Binding Count, UpdateSourceTrigger=PropertyChanged}"
+                                                         Width="60"
+                                                         TextAlignment="Right"
+                                                         Padding="4,2"
+                                                         VerticalContentAlignment="Center"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </GroupBox>
+                </DockPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
