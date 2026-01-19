@@ -15,9 +15,11 @@ A WPF desktop application for editing Star Rupture save files (.sav).
 
 ## Usage
 
-1. Open a .sav file from `%LocalAppData%\ForeverSkies\Saved\SaveGames`
+1. Open a .sav file from C:\Program Files (x86)\Steam\userdata\[your steam id]\1631270\remote\Saved\SaveGames\YourSaveFolderName\
 2. Edit recipes in the Crafting tab
 3. Save (creates automatic backup)
+
+BE SURE YOU HAVE MADE YOUR OWN BACKUP OF YOUR SAVE FILES BEFORE PROCEEDING! Not responsible for any lost or corrupted data. This editor was made mostly by AI so no guarantees! :)
 
 ## Building
 
