@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StarRuptureSaveEditor"
+        xmlns:views="clr-namespace:StarRuptureSaveEditor.Views"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}"
         Height="700" Width="1100"
@@ -598,7 +599,9 @@
                         </Border>
                     </Grid>
                 </TabItem>
-                <TabItem Header="📈 Progression" IsEnabled="False" ToolTip="Coming soon"/>
+                <TabItem Header="Player Stats">
+                    <views:StatsEditorView DataContext="{Binding StatsEditor}"/>
+                </TabItem>
             </TabControl>
         </Grid>
 

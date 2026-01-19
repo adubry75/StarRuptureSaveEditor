@@ -5,6 +5,7 @@ using System.Text.Json.Nodes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
+using StarRuptureSaveEditor.ViewModels;
 
 namespace StarRuptureSaveEditor;
 
@@ -606,11 +607,13 @@ public partial class MainViewModel : ObservableObject
         _saveFileService = new SaveFileService();
         CraftingEditor = new CraftingEditorViewModel(OnDataModified);
         InventoryEditor = new InventoryEditorViewModel(OnDataModified);
+        StatsEditor = new StatsEditorViewModel(OnDataModified);
         RawJsonViewer = new RawJsonViewModel();
     }
 
     public CraftingEditorViewModel CraftingEditor { get; }
     public InventoryEditorViewModel InventoryEditor { get; }
+    public StatsEditorViewModel StatsEditor { get; }
     public RawJsonViewModel RawJsonViewer { get; }
 
     public string CurrentFileName =>
@@ -651,6 +654,7 @@ public partial class MainViewModel : ObservableObject
         {
             CraftingEditor.ApplyToJson(_rootNode);
             InventoryEditor.ApplyToJson(_rootNode);
+            StatsEditor.ApplyToJson(_rootNode);
 
             string backupPath = _currentFilePath + ".backup";
             if (File.Exists(_currentFilePath))
@@ -702,6 +706,7 @@ public partial class MainViewModel : ObservableObject
             {
                 CraftingEditor.ApplyToJson(_rootNode);
                 InventoryEditor.ApplyToJson(_rootNode);
+                StatsEditor.ApplyToJson(_rootNode);
                 _saveFileService.SaveToFile(_rootNode, dialog.FileName);
 
                 _currentFilePath = dialog.FileName;
@@ -742,6 +747,7 @@ public partial class MainViewModel : ObservableObject
             {
                 CraftingEditor.ApplyToJson(_rootNode);
                 InventoryEditor.ApplyToJson(_rootNode);
+                StatsEditor.ApplyToJson(_rootNode);
                 _saveFileService.ExportAsJson(_rootNode, dialog.FileName);
                 StatusMessage = $"Exported to {Path.GetFileName(dialog.FileName)}";
             }
@@ -787,6 +793,7 @@ public partial class MainViewModel : ObservableObject
 
             CraftingEditor.LoadFromJson(_rootNode);
             InventoryEditor.LoadFromJson(_rootNode);
+            StatsEditor.LoadFromJson(_rootNode);
             RawJsonViewer.LoadFromJson(_rootNode);
 
             IsFileLoaded = true;
