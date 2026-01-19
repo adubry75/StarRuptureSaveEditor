@@ -10,6 +10,8 @@ A WPF desktop application for editing Star Rupture save files (.sav).
   - Edit item count requirements
   - Search/filter recipes
   - Bulk unlock all recipes
+- **Inventory Editor**: Change inventory quantities on any item.
+- **Player Stats**: Adjust your health, defence, hydration, etc...
 - **Raw JSON Viewer**: Read-only view of the complete save structure
 - **Round-trip safe**: Preserves unknown fields and data structure
 
