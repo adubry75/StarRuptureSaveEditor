@@ -2,10 +2,10 @@ using System.IO;
 using System.Text.Json.Nodes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-//using ForeverSkiesSaveEditor.Services;
+//using StarRuptureSaveEditor.Services;
 using Microsoft.Win32;
 
-namespace ForeverSkiesSaveEditor.ViewModels;
+namespace StarRuptureSaveEditor.ViewModels;
 
 /// <summary>
 /// Main ViewModel that coordinates the application.
@@ -68,7 +68,7 @@ public partial class MainViewModel : ObservableObject
         // Try to default to the Star Rupture save location
         string defaultPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "ForeverSkies", "Saved", "SaveGames");
+            "StarRupture", "Saved", "SaveGames");
         
         if (Directory.Exists(defaultPath))
         {

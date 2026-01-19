@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace ForeverSkiesSaveEditor;
+namespace StarRuptureSaveEditor;
 
 /// <summary>
 /// Handles loading and saving .sav files (zlib-compressed JSON with 4-byte size header)

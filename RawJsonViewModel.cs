@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ForeverSkiesSaveEditor.ViewModels;
+namespace StarRuptureSaveEditor.ViewModels;
 
 /// <summary>
 /// ViewModel for the Raw JSON viewer tab.

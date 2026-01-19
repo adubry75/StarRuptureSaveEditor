@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace ForeverSkiesSaveEditor;
+namespace StarRuptureSaveEditor;
 
 public partial class App : Application
 {

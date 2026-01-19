@@ -35,7 +35,7 @@ Or open in Visual Studio 2022+ and build.
 ## Project Structure
 
 ```
-ForeverSkiesSaveEditor/
+StarRuptureSaveEditor/
 ├── Models/                  # Data models
 │   ├── LockedRecipe.cs     # Recipe with item requirements
 │   └── RecipeItem.cs       # Single item requirement
@@ -102,7 +102,7 @@ The JSON must be **minified** (no whitespace) when saving, or the game won't loa
 
 3. **Create the View** (`Views/YourEditorView.xaml`):
    ```xml
-   <UserControl x:Class="ForeverSkiesSaveEditor.Views.YourEditorView" ...>
+   <UserControl x:Class="StarRuptureSaveEditor.Views.YourEditorView" ...>
        <!-- Your UI -->
    </UserControl>
    ```

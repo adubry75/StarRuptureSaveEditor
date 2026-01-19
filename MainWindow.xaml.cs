@@ -1,6 +1,7 @@
 using System.Windows;
+using System.Windows.Controls;
 
-namespace ForeverSkiesSaveEditor;
+namespace StarRuptureSaveEditor;
 
 public partial class MainWindow : Window
 {
@@ -9,7 +10,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = new MainViewModel();
     }
-    
+
     protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
     {
         if (DataContext is MainViewModel vm && vm.HasUnsavedChanges)
@@ -19,7 +20,7 @@ public partial class MainWindow : Window
                 "Unsaved Changes",
                 MessageBoxButton.YesNoCancel,
                 MessageBoxImage.Warning);
-            
+
             if (result == MessageBoxResult.Yes)
             {
                 vm.SaveFileCommand.Execute(null);
@@ -30,7 +31,19 @@ public partial class MainWindow : Window
                 return;
             }
         }
-        
+
         base.OnClosing(e);
+    }
+
+    private void SetAmount_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button &&
+            button.Tag is string tagValue &&
+            int.TryParse(tagValue, out int amount) &&
+            DataContext is MainViewModel mainVm &&
+            mainVm.InventoryEditor.SelectedItem != null)
+        {
+            mainVm.InventoryEditor.SelectedItem.Amount = amount;
+        }
     }
 }

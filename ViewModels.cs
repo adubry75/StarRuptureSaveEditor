@@ -6,7 +6,261 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 
-namespace ForeverSkiesSaveEditor;
+namespace StarRuptureSaveEditor;
+
+/// <summary>
+/// ViewModel for editing a single inventory item.
+/// </summary>
+public partial class InventoryItemViewModel : ObservableObject
+{
+    private readonly InventoryItem _model;
+    private readonly Action _onModified;
+
+    [ObservableProperty]
+    private int _amount;
+
+    public InventoryItemViewModel(InventoryItem model, Action onModified)
+    {
+        _model = model;
+        _onModified = onModified;
+        _amount = model.Amount;
+    }
+
+    public string Handle => _model.Handle;
+    public string ItemData => _model.ItemData;
+    public string FriendlyName => _model.FriendlyName;
+    public string ItemId => _model.ItemId;
+    public string Category => _model.Category;
+    public int ArrayIndex => _model.ArrayIndex;
+
+    partial void OnAmountChanged(int value)
+    {
+        _model.Amount = value;
+        _onModified();
+    }
+
+    public InventoryItem GetModel() => _model;
+}
+
+/// <summary>
+/// ViewModel for the Inventory editor tab.
+/// </summary>
+public partial class InventoryEditorViewModel : ObservableObject
+{
+    private readonly Action _onModified;
+    private JsonArray? _itemsArrayNode;
+    private string? _playerId;
+
+    [ObservableProperty]
+    private InventoryItemViewModel? _selectedItem;
+
+    [ObservableProperty]
+    private string _searchText = string.Empty;
+
+    [ObservableProperty]
+    private string _statusMessage = string.Empty;
+
+    [ObservableProperty]
+    private string _selectedCategory = "All";
+
+    public InventoryEditorViewModel(Action onModified)
+    {
+        _onModified = onModified;
+        AllItems = new ObservableCollection<InventoryItemViewModel>();
+        FilteredItems = new ObservableCollection<InventoryItemViewModel>();
+        Categories = new ObservableCollection<string> { "All" };
+    }
+
+    public ObservableCollection<InventoryItemViewModel> AllItems { get; }
+    public ObservableCollection<InventoryItemViewModel> FilteredItems { get; }
+    public ObservableCollection<string> Categories { get; }
+
+    public int TotalItemCount => AllItems.Count;
+    public int TotalQuantity => AllItems.Sum(i => i.Amount);
+
+    public string? PlayerId => _playerId;
+
+    partial void OnSearchTextChanged(string value)
+    {
+        ApplyFilter();
+    }
+
+    partial void OnSelectedCategoryChanged(string value)
+    {
+        ApplyFilter();
+    }
+
+    public void LoadFromJson(JsonNode? root)
+    {
+        AllItems.Clear();
+        FilteredItems.Clear();
+        Categories.Clear();
+        Categories.Add("All");
+        SelectedItem = null;
+        _itemsArrayNode = null;
+        _playerId = null;
+
+        if (root == null)
+        {
+            StatusMessage = "No data loaded";
+            return;
+        }
+
+        try
+        {
+            // Navigate to the inventory path
+            var allPlayersSaveData = root["itemData"]?["GameStateData"]?["allCharactersBaseSaveData"]?["allPlayersSaveData"]?.AsObject();
+
+            if (allPlayersSaveData == null || allPlayersSaveData.Count == 0)
+            {
+                StatusMessage = "No player data found in save file";
+                return;
+            }
+
+            // Get first player's ID and inventory
+            var firstPlayer = allPlayersSaveData.First();
+            _playerId = firstPlayer.Key;
+
+            var itemsArray = firstPlayer.Value?["itemsStoreState"]?["itemsArray"]?.AsArray();
+
+            if (itemsArray == null)
+            {
+                StatusMessage = "No inventory found for player";
+                return;
+            }
+
+            _itemsArrayNode = itemsArray;
+
+            var categorySet = new HashSet<string>();
+
+            for (int i = 0; i < itemsArray.Count; i++)
+            {
+                var itemNode = itemsArray[i];
+                if (itemNode == null) continue;
+
+                var item = new InventoryItem
+                {
+                    Handle = itemNode["handle"]?["handle"]?.GetValue<string>() ?? string.Empty,
+                    ItemData = itemNode["itemData"]?.GetValue<string>() ?? string.Empty,
+                    Amount = itemNode["amount"]?.GetValue<int>() ?? 0,
+                    ArrayIndex = i
+                };
+
+                var vm = new InventoryItemViewModel(item, OnItemModified);
+                AllItems.Add(vm);
+                categorySet.Add(vm.Category);
+            }
+
+            // Sort by friendly name
+            var sorted = AllItems.OrderBy(i => i.FriendlyName).ToList();
+            AllItems.Clear();
+            foreach (var item in sorted)
+                AllItems.Add(item);
+
+            // Add categories
+            foreach (var cat in categorySet.OrderBy(c => c))
+            {
+                Categories.Add(cat);
+            }
+
+            ApplyFilter();
+
+            StatusMessage = $"Loaded {AllItems.Count} items (Player: {_playerId})";
+            OnPropertyChanged(nameof(TotalItemCount));
+            OnPropertyChanged(nameof(TotalQuantity));
+            OnPropertyChanged(nameof(PlayerId));
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error loading inventory: {ex.Message}";
+        }
+    }
+
+    public void ApplyToJson(JsonNode root)
+    {
+        if (_itemsArrayNode == null) return;
+
+        foreach (var item in AllItems)
+        {
+            var index = item.ArrayIndex;
+            if (index >= 0 && index < _itemsArrayNode.Count)
+            {
+                var itemNode = _itemsArrayNode[index]?.AsObject();
+                if (itemNode != null)
+                {
+                    itemNode["amount"] = JsonValue.Create(item.Amount);
+                }
+            }
+        }
+    }
+
+    [RelayCommand]
+    private void SetAllAmounts(string amountStr)
+    {
+        if (!int.TryParse(amountStr, out int amount)) return;
+
+        foreach (var item in FilteredItems)
+        {
+            item.Amount = amount;
+        }
+        OnPropertyChanged(nameof(TotalQuantity));
+    }
+
+    [RelayCommand]
+    private void MultiplyAllAmounts(string multiplierStr)
+    {
+        if (!double.TryParse(multiplierStr, out double multiplier)) return;
+
+        foreach (var item in FilteredItems)
+        {
+            item.Amount = (int)(item.Amount * multiplier);
+        }
+        OnPropertyChanged(nameof(TotalQuantity));
+    }
+
+    [RelayCommand]
+    private void MaxSelectedItem()
+    {
+        if (SelectedItem != null)
+        {
+            SelectedItem.Amount = 9999;
+            OnPropertyChanged(nameof(TotalQuantity));
+        }
+    }
+
+    private void ApplyFilter()
+    {
+        FilteredItems.Clear();
+
+        var searchLower = SearchText.ToLowerInvariant();
+        var filtered = AllItems.AsEnumerable();
+
+        // Filter by category
+        if (SelectedCategory != "All")
+        {
+            filtered = filtered.Where(i => i.Category == SelectedCategory);
+        }
+
+        // Filter by search text
+        if (!string.IsNullOrWhiteSpace(searchLower))
+        {
+            filtered = filtered.Where(i =>
+                i.FriendlyName.ToLowerInvariant().Contains(searchLower) ||
+                i.ItemId.ToLowerInvariant().Contains(searchLower));
+        }
+
+        foreach (var item in filtered)
+        {
+            FilteredItems.Add(item);
+        }
+    }
+
+    private void OnItemModified()
+    {
+        OnPropertyChanged(nameof(TotalQuantity));
+        _onModified();
+    }
+}
 
 /// <summary>
 /// ViewModel for editing a single item requirement within a recipe.
@@ -351,10 +605,12 @@ public partial class MainViewModel : ObservableObject
     {
         _saveFileService = new SaveFileService();
         CraftingEditor = new CraftingEditorViewModel(OnDataModified);
+        InventoryEditor = new InventoryEditorViewModel(OnDataModified);
         RawJsonViewer = new RawJsonViewModel();
     }
 
     public CraftingEditorViewModel CraftingEditor { get; }
+    public InventoryEditorViewModel InventoryEditor { get; }
     public RawJsonViewModel RawJsonViewer { get; }
 
     public string CurrentFileName =>
@@ -372,7 +628,7 @@ public partial class MainViewModel : ObservableObject
 
         string defaultPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "ForeverSkies", "Saved", "SaveGames");
+            "StarRupture", "Saved", "SaveGames");
 
         if (Directory.Exists(defaultPath))
         {
@@ -394,6 +650,7 @@ public partial class MainViewModel : ObservableObject
         try
         {
             CraftingEditor.ApplyToJson(_rootNode);
+            InventoryEditor.ApplyToJson(_rootNode);
 
             string backupPath = _currentFilePath + ".backup";
             if (File.Exists(_currentFilePath))
@@ -444,6 +701,7 @@ public partial class MainViewModel : ObservableObject
             try
             {
                 CraftingEditor.ApplyToJson(_rootNode);
+                InventoryEditor.ApplyToJson(_rootNode);
                 _saveFileService.SaveToFile(_rootNode, dialog.FileName);
 
                 _currentFilePath = dialog.FileName;
@@ -483,6 +741,7 @@ public partial class MainViewModel : ObservableObject
             try
             {
                 CraftingEditor.ApplyToJson(_rootNode);
+                InventoryEditor.ApplyToJson(_rootNode);
                 _saveFileService.ExportAsJson(_rootNode, dialog.FileName);
                 StatusMessage = $"Exported to {Path.GetFileName(dialog.FileName)}";
             }
@@ -527,6 +786,7 @@ public partial class MainViewModel : ObservableObject
             _currentFilePath = filePath;
 
             CraftingEditor.LoadFromJson(_rootNode);
+            InventoryEditor.LoadFromJson(_rootNode);
             RawJsonViewer.LoadFromJson(_rootNode);
 
             IsFileLoaded = true;

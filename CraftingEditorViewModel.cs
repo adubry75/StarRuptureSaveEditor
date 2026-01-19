@@ -2,9 +2,9 @@ using System.Collections.ObjectModel;
 using System.Text.Json.Nodes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-//using ForeverSkiesSaveEditor.Models;
+//using StarRuptureSaveEditor.Models;
 
-namespace ForeverSkiesSaveEditor.ViewModels;
+namespace StarRuptureSaveEditor.ViewModels;
 
 /// <summary>
 /// ViewModel for the Crafting Recipe editor tab.

@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace ForeverSkiesSaveEditor;
+namespace StarRuptureSaveEditor;
 
 /// <summary>
 /// Converts null to Collapsed, non-null to Visible.

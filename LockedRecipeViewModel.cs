@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-//using ForeverSkiesSaveEditor.Models;
+//using StarRuptureSaveEditor.Models;
 
-namespace ForeverSkiesSaveEditor.ViewModels;
+namespace StarRuptureSaveEditor.ViewModels;
 
 /// <summary>
 /// ViewModel for a single locked recipe, allowing editing of its item requirements.

@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-//using ForeverSkiesSaveEditor.Models;
+//using StarRuptureSaveEditor.Models;
 
-namespace ForeverSkiesSaveEditor.ViewModels;
+namespace StarRuptureSaveEditor.ViewModels;
 
 /// <summary>
 /// ViewModel for editing a single item requirement within a recipe.
