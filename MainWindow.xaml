@@ -127,7 +127,7 @@
                                FontSize="11">
                         <Run Text="Save files are typically located at:"/>
                         <LineBreak/>
-                        <Run Text="%LocalAppData%\StarRupture\Saved\SaveGames"/>
+                        <Run Text="C:\Program Files (x86)\Steam\userdata\[your steam id]\1631270\remote\Saved\SaveGames\[your save file name]\"/>
                     </TextBlock>
                 </StackPanel>
             </Border>
