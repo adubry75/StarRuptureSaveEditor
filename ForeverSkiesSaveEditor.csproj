@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <Title>Forever Skies Save Editor</Title>
-    <Description>A save game editor for Forever Skies</Description>
+    <Title>Star Rupture Save Editor</Title>
+    <Description>A save game editor for Star Rupture</Description>
   </PropertyGroup>
 
   <ItemGroup>

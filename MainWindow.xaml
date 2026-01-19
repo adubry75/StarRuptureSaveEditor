@@ -100,7 +100,7 @@
                 <StackPanel HorizontalAlignment="Center" 
                             VerticalAlignment="Center"
                             Margin="40">
-                    <TextBlock Text="Forever Skies Save Editor"
+                    <TextBlock Text="Star Rupture Save Editor"
                                FontSize="28"
                                FontWeight="Light"
                                HorizontalAlignment="Center"/>

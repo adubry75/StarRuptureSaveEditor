@@ -339,7 +339,7 @@ public partial class MainViewModel : ObservableObject
     private bool _hasUnsavedChanges;
 
     [ObservableProperty]
-    private string _windowTitle = "Forever Skies Save Editor";
+    private string _windowTitle = "Star Rupture Save Editor";
 
     [ObservableProperty]
     private string _statusMessage = "Ready. Open a .sav file to begin.";
@@ -561,7 +561,7 @@ public partial class MainViewModel : ObservableObject
 
     private void UpdateWindowTitle()
     {
-        string title = "Forever Skies Save Editor";
+        string title = "Star Rupture Save Editor";
 
         if (!string.IsNullOrEmpty(_currentFilePath))
         {

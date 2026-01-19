@@ -1,6 +1,6 @@
-# Forever Skies Save Editor
+# Star Rupture Save Editor
 
-A WPF desktop application for editing Forever Skies save files (.sav).
+A WPF desktop application for editing Star Rupture save files (.sav).
 
 ## Features
 
@@ -57,7 +57,7 @@ ForeverSkiesSaveEditor/
 
 ## Save File Format
 
-Forever Skies uses a simple format:
+Star Rupture uses a simple format:
 - **Header**: 4 bytes - uncompressed size (little-endian uint32)
 - **Body**: zlib-compressed JSON
 
@@ -154,4 +154,4 @@ Based on analysis of the save file:
 
 ## License
 
-Personal use only. Not affiliated with Forever Skies developers.
+Personal use only. Not affiliated with Star Rupture developers.
