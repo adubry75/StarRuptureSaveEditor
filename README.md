@@ -17,6 +17,16 @@ A desktop application for editing Star Rupture save files (.sav).
 - **Raw JSON Viewer**: Read-only view of the complete save structure
 - **Round-trip safe**: Preserves unknown fields and data structure
 
+## Download
+
+Go to the Releases page:
+https://github.com/adubry75/StarRuptureSaveEditor/releases
+
+1. Download the latest ZIP
+2. Unzip it
+3. Run StarRuptureSaveEditor.exe
+
+
 ## Usage
 
 1. Open a .sav file from C:\Program Files (x86)\Steam\userdata\[your steam id]\1631270\remote\Saved\SaveGames\YourSaveFolderName\
