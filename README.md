@@ -26,6 +26,17 @@ https://github.com/adubry75/StarRuptureSaveEditor/releases
 2. Unzip it
 3. Run StarRuptureSaveEditor.exe
 
+## About the Windows Warning
+
+Windows may freak out a little the first time you run this app. This is normal for unsigned indie tools.
+
+Just do this:
+
+Click More info
+
+Click Run anyway
+
+The app is open-source, runs locally, and doesn’t phone home.
 
 ## Usage
 
