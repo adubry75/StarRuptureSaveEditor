@@ -1,6 +1,8 @@
 # Star Rupture Save Editor
 
-A WPF desktop application for editing Star Rupture save files (.sav).
+A desktop application for editing Star Rupture save files (.sav).
+
+<img width="3236" height="2062" alt="image" src="https://github.com/user-attachments/assets/dbad4f7f-39bd-4c13-8743-1a0f4e99639e" />
 
 ## Features
 
